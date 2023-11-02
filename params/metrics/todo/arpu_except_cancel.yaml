@@ -1,4 +1,4 @@
-name: Average Revenuer Per User Without Cancelllations
+name: Average Revenuer Per User Without Cancellations
 type: ratio
 estimator: t_test
 level: user_pseudo_id

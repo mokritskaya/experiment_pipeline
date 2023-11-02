@@ -6,10 +6,14 @@ import numpy as np
 from yaml.loader import SafeLoader
 from os import listdir
 
+def listdir_nohidden(path):
+    for f in listdir(path):
+        if not f.startswith('.'):
+            yield f
 
 def _load_yaml_preset(preset="default"):
     preset_path = config.PATH_METRIC_CONFIGS + preset
-    metrics_to_load = listdir(preset_path)
+    metrics_to_load = listdir_nohidden(preset_path)
     metrics = []
     for metric in metrics_to_load:
         with open(preset_path + "/" + metric) as f:

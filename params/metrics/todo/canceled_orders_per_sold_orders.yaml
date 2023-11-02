@@ -1,4 +1,4 @@
-name: Average Order Value
+name: Canceled Orders per Sold Orders
 type: ratio
 estimator: t_test
 level: user_pseudo_id

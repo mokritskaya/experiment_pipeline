@@ -2,7 +2,8 @@ import pandas as pd
 import numpy as np
 import abc
 
-from scipy.stats import ttest_ind_from_stats, ttest_ind
+from scipy.stats import ttest_ind_from_stats, mannwhitneyu
+from statsmodels.stats.proportion import proportions_ztest
 
 import config as cfg
 
@@ -69,6 +70,40 @@ class TTestFromStats(Estimator):
                 std2=np.sqrt(stat.var_1),
                 nobs2=stat.n_1
             )
+        except Exception as e:
+            cfg.logger.error(e)
+            statistic, pvalue = None, None
+
+        return EstimatorCriteriaValues(pvalue, statistic)
+
+
+class MannWhitneyTest(Estimator):
+
+    def __call__(self, df) -> EstimatorCriteriaValues:
+        try:
+            _variants = df[cfg.VARIANT_COL].unique()
+            statistic, pvalue = mannwhitneyu(
+                df[df[cfg.VARIANT_COL] == _variants[0]]['l_ratio'],
+                df[df[cfg.VARIANT_COL] == _variants[1]]['l_ratio'], 
+                alternative='two-sided')
+
+        except Exception as e:
+            cfg.logger.error(e)
+            statistic, pvalue = None, None
+
+        return EstimatorCriteriaValues(pvalue, statistic)
+
+
+class PropZTest(Estimator):
+
+    def __call__(self, df) -> EstimatorCriteriaValues:
+        try:
+            _variants = df[cfg.VARIANT_COL].unique()
+            statistic, pvalue = proportions_ztest(
+                [sum(df[df[cfg.VARIANT_COL] == _variants[0]]['num']), sum(df[df[cfg.VARIANT_COL] == _variants[1]]['num'])], 
+                [sum(df[df[cfg.VARIANT_COL] == _variants[0]]['den']), sum(df[df[cfg.VARIANT_COL] == _variants[1]]['den'])],
+                alternative='two-sided')
+
         except Exception as e:
             cfg.logger.error(e)
             statistic, pvalue = None, None
