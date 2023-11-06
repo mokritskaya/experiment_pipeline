@@ -141,4 +141,3 @@ def calculate_linearization(df):
         df.loc[df[cfg.VARIANT_COL] == _variants[1], 'l_ratio'] = l_1
 
     return df
-
